@@ -90,7 +90,7 @@ for ii = idx[2:end];
 		alpha = alpha + Kinv*qt*(y[ii] - kt'*alpha);
 
 		if mod(m2,50)==0
-			fprintf("On sample: $ms of $(sz[2]\n")
+			fprintf("On sample: $ms of $(sz[2])\n")
 		end
 
 	end
@@ -101,3 +101,5 @@ dict = dict[:,1:m];
 dict_idx = dict_idx[1:m];
 
 (alpha, dict, Kinv, dict_idx)
+
+end
