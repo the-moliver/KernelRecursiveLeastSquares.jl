@@ -88,13 +88,9 @@ for ii = idx[2:end];
 		# P -= ((Pat*(at'*P)) ./ atPat);
 
 		PatatP = Pat*(at'*P);
+		PatatP ./= atPat[1];
 
-		for pp = 1:length(PatatP)
-			PatatP[pp] /= atPat[1]
-			P[pp] -= PatatP[pp]
-		end
-
-		# P -= PatatP;
+		P -= PatatP;
 
 		# alpha += Kinv*qt*(y[ii] - kt'*alpha);
 
@@ -104,11 +100,9 @@ for ii = idx[2:end];
 
 		Kinvqt = Kinv*qt;
 
-		# Kinvqt .*= dif;
-		for qq = 1:length(Kinvqt)
-			alpha[qq] += Kinvqt[qq]*dif;
-		end
-		# alpha += Kinvqt;
+		Kinvqt .*= dif;
+
+		alpha += Kinvqt;
 
 		if mod(m2,50)==0
 			println("On sample: $m2 of $(sz[2])")
