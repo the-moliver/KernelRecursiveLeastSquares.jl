@@ -85,9 +85,22 @@ for ii = idx[2:end];
 
 		qt = Pat ./ atPat;
 
-		P -= ((Pat*(at'*P)) ./ atPat);
+		# P -= ((Pat*(at'*P)) ./ atPat);
 
-		alpha += Kinv*qt*(y[ii] - kt'*alpha);
+		PatatP = Pat*(at'*P);
+		PatatP ./= atPat;
+
+		P -= PatatP;
+
+		# alpha += Kinv*qt*(y[ii] - kt'*alpha);
+
+		dif = y[ii] - kt'*alpha;
+
+		Kinvqt = Kinv*qt;
+
+		Kinvqt .*= dif;
+
+		alpha += Kinvqt;
 
 		if mod(m2,50)==0
 			println("On sample: $m2 of $(sz[2])")
