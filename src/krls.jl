@@ -98,9 +98,13 @@ for ii = idx[2:end];
 
 		# alpha += Kinv*qt*(y[ii] - kt'*alpha);
 
-		kta = kt'*alpha;
+		# kta = kt'*alpha;
+		kta = 0;
+		for kk = 1:length(kt)
+			kta += kt[kk]*alpha[kk]
+		end
 
-		dif = y[ii] - kta[1];
+		dif = y[ii] - kta;
 
 		Kinvqt = Kinv*qt;
 
