@@ -75,7 +75,7 @@ for ii = idx[2:end];
 		alpha = [alpha - ((at ./ dt) * (y[ii] - kt'*alpha)); (1./dt)*(y[ii] - kt'*alpha)];
 
 		if mod(m,50)==0
-			println("Dictionary Size: $m of $maxdict\n")
+			println("Dictionary Size: $m of $maxdict")
 		end
 		
 	else
@@ -90,7 +90,7 @@ for ii = idx[2:end];
 		alpha += Kinv*qt*(y[ii] - kt'*alpha);
 
 		if mod(m2,50)==0
-			println("On sample: $m2 of $(sz[2])\n")
+			println("On sample: $m2 of $(sz[2])")
 		end
 
 	end
