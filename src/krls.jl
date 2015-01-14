@@ -88,7 +88,7 @@ for ii = idx[2:end];
 		# P -= ((Pat*(at'*P)) ./ atPat);
 
 		PatatP = Pat*(at'*P);
-		PatatP ./= atPat;
+		PatatP ./= atPat[1];
 
 		P -= PatatP;
 
