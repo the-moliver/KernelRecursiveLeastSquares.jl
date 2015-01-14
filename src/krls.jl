@@ -83,7 +83,7 @@ for ii = idx[2:end];
 		Pat = P*at;
 		atPat = 1 + at'*Pat;
 
-		qt = Pat ./ atPat;
+		qt = Pat ./ atPat[1];
 
 		# P -= ((Pat*(at'*P)) ./ atPat);
 
@@ -94,7 +94,9 @@ for ii = idx[2:end];
 
 		# alpha += Kinv*qt*(y[ii] - kt'*alpha);
 
-		dif = y[ii] - kt'*alpha;
+		kta = kt'*alpha;
+
+		dif = y[ii] - kta[1];
 
 		Kinvqt = Kinv*qt;
 
