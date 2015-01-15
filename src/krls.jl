@@ -1,4 +1,4 @@
-function krls(x, y; nu=1., lambda=0.1, kernelfunc=linear_kernel, maxdict=100, precision=float32, index="lin")
+function krls(x, y; nu=1., lambda=0.1, kernelfunc=linear_kernel, maxdict=100, prec=float32, index="lin")
 
 # krls(x, y)
 #
@@ -20,10 +20,10 @@ function krls(x, y; nu=1., lambda=0.1, kernelfunc=linear_kernel, maxdict=100, pr
 #
 
 
-x = precision(x);
-y = precision(y);
-lambda = precision(lambda);
-nu = precision(nu);
+x = prec(x);
+y = prec(y);
+lambda = prec(lambda);
+nu = prec(nu);
 
 lambda2 = lambda.^2;
 
@@ -81,38 +81,40 @@ for ii = idx[2:end];
 		
 	else
 
-		# Pat = P*at;
-		# atPat = 1 + at'*Pat;
-
-		# qt = Pat ./ atPat[1];
-
-		# # P -= ((Pat*(at'*P)) ./ atPat);
-
-		# PatatP = Pat*(at'*P);
-		# PatatP ./= atPat[1];
-
-		# P -= PatatP;
-
-		# # alpha += Kinv*qt*(y[ii] - kt'*alpha);
-
-		# kta = kt'*alpha;
-
-		# dif = y[ii] - kta[1];
-
-		# Kinvqt = Kinv*qt;
-
-		# Kinvqt .*= dif;
-
-		# alpha += Kinvqt;
-
 		Pat = P*at;
 		atPat = 1 + at'*Pat;
 
-		qt = Pat ./ atPat;
+		qt = Pat ./ atPat[1];
 
-		P -= ((Pat*(at'*P)) ./ atPat);
+		# # P -= ((Pat*(at'*P)) ./ atPat);
 
-		alpha +=  Kinv*qt*(y[ii] - kt*alpha);
+		PatatP = Pat*(at'*P);
+		PatatP ./= atPat[1];
+
+		P -= PatatP;
+
+		# # alpha += Kinv*qt*(y[ii] - kt'*alpha);
+
+		kta = kt*alpha;
+
+		dif = y[ii] - kta[1];
+
+		Kinvqt = Kinv*qt;
+
+		Kinvqt .*= dif;
+
+		alpha += Kinvqt;
+
+		###
+
+		# Pat = P*at;
+		# atPat = 1 + at'*Pat;
+
+		# qt = Pat ./ atPat;
+
+		# P -= ((Pat*(at'*P)) ./ atPat);
+
+		# alpha +=  Kinv*qt*(y[ii] - kt*alpha);
 
 		if mod(m2,50)==0
 			println("On sample: $m2 of $(sz[2])")
