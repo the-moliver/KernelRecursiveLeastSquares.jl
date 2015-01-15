@@ -1,52 +1,64 @@
-using KernelLibrary, KernelRecursiveLeastSquares, ProfileView
+using KernelLibrary, KernelRecursiveLeastSquares, Winston
 
-x = randn(10000,50);
-h = randn(50,1);
-h2 = randn(50,1);
-y = (x*h + 1).^3 + 4*(x*h2 + 1).^2+ 200*randn(10000,1);
-stdy = std(y)
-y ./= stdy;
+x = randn(5000,20);
+h = randn(20,1);
+h2 = randn(20,1);
+y = (x*h + 1).^3 + 4*(x*h2 + 1).^2+ 500*randn(5000,1);
 
-x2 = randn(200,50);
+x2 = randn(200,20);
 y2 = (x2*h + 1).^3 + 4*(x2*h2 + 1).^2;
-y2 ./= stdy;
 
 x=x'; y=y';
 x2=x2'; y2=y2';
 
 
-k(x,y) = polynomial_kernel(x,y,3)
+k(x,y) = polynomial_kernel(x,y,2);
 
-@time (alpha1, dict1, Kinv1, dict1_idx) = krls(x, y, kernelfunc=k, nu=1., maxdict=200);
+(alpha1, dict1, Kinv1, dict1_idx) = krls(x, y, kernelfunc=k, nu=1., maxdict=30);
 
-# @profile (alpha1, dict1, Kinv1, dict1_idx) = krls(x, y, kernelfunc=k, nu=1., maxdict=100);
+@time (alpha1, dict1, Kinv1, dict1_idx) = krls(x, y, kernelfunc=k, nu=1., maxdict=300);
 
-profileView.view()
 
-ypred = alpha1'*k(dict1, x2);
+ypred1 = zeros(size(x2,2),1);
+for ii in [1:size(x2,2)]
+	tmp = k(dict1, float32(x2[:,ii]))*alpha1;
+	ypred1[ii]=tmp[1];
+end
 
-cor(ypred', y2')
+cor(ypred1, y2')
 
-k(x,y) = multiquad_kernel(x,y,1)';
+k(x,y) = multiquad_kernel(x,y,1);
 
-@time (alpha1, dict1, Kinv1, dict1_idx) = krls(x, y, kernelfunc=k, nu=.5, maxdict=200);
+@time (alpha1, dict1, Kinv1, dict1_idx) = krls(x, y, kernelfunc=k, nu=3., maxdict=300, index="rand");
 
 ypred2 = zeros(size(x2,2),1);
 for ii in [1:size(x2,2)]
-	tmp = alpha1'*k(dict1, x2[:,ii]);
+	tmp = k(dict1, float32(x2[:,ii]))*alpha1;
 	ypred2[ii]=tmp[1];
 end
 
 cor(ypred2, y2')
 
-k(x,y) = power_kernel(x,y,3)';
+k(x,y) = power_kernel(x,y,3);
 
-@time (alpha1, dict1, Kinv1, dict1_idx) = krls(x, y, kernelfunc=k, nu=.5, maxdict=200);
+@time (alpha1, dict1, Kinv1, dict1_idx) = krls(x, y, kernelfunc=k, nu=.5, maxdict=300, index="rand");
 
-ypred2 = zeros(size(x2,2),1);
+ypred3 = zeros(size(x2,2),1);
 for ii in [1:size(x2,2)]
-	tmp = alpha1'*k(dict1, x2[:,ii]);
-	ypred2[ii]=tmp[1];
+	tmp = k(dict1, float32(x2[:,ii]))*alpha1;
+	ypred3[ii]=tmp[1];
 end
 
-cor(ypred2, y2')
+cor(ypred3, y2')
+
+hold(false)
+plot(y2')
+hold(true)
+plot(ypred1, "r");
+plot(ypred2, "g")
+plot(ypred3, "b")
+
+
+mp = mean([ypred1 ypred2 ypred3],2);
+plot(mp,"m")
+cor(mp, y2')

@@ -19,6 +19,7 @@ function krls(x, y; nu=1., lambda=0.1, kernelfunc=linear_kernel, maxdict=100, pr
 #	   dict_idx : dictionary sample indicies
 #
 
+# nu=1.; lambda=0.1; kernelfunc=linear_kernel; maxdict=100; prec=float32; index="lin"
 
 x = prec(x);
 y = prec(y);
@@ -86,35 +87,19 @@ for ii = idx[2:end];
 
 		qt = Pat / atPat[1];
 
-		# # P -= ((Pat*(at'*P)) ./ atPat);
+		atP = (at'*P);
 
-		PatatP = Pat*(at'*P);
-		PatatP /= atPat[1];
+		# P -= ((Pat*(at'*P)) ./ atPat);
+		# optimized as
+		Base.LinAlg.BLAS.gemm!('N', 'N', -one(eltype(y)), qt,atP, one(eltype(y)), P);
 
-		P -= PatatP;
-
-		# # alpha += Kinv*qt*(y[ii] - kt'*alpha);
-
+		# alpha +=  Kinv*qt*(y[ii] - kt*alpha);
+		# optimized as
 		kta = kt*alpha;
 
 		dif = y[ii] - kta[1];
 
-		Kinvqt = Kinv*qt;
-
-		Kinvqt *= dif;
-
-		alpha += Kinvqt;
-
-		###
-
-		# Pat = P*at;
-		# atPat = 1 + at'*Pat;
-
-		# qt = Pat ./ atPat;
-
-		# P -= ((Pat*(at'*P)) ./ atPat);
-
-		# alpha +=  Kinv*qt*(y[ii] - kt*alpha);
+		Base.LinAlg.BLAS.gemm!('N', 'N', dif, Kinv,qt, one(eltype(y)), alpha);
 
 		if mod(m2,50)==0
 			println("On sample: $m2 of $(sz[2])")
