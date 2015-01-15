@@ -23,6 +23,7 @@ function krls(x, y; nu=1., lambda=0.1, kernelfunc=linear_kernel, maxdict=100, pr
 x = precision(x);
 y = precision(y);
 lambda = precision(lambda);
+nu = precision(nu);
 
 lambda2 = lambda.^2;
 
@@ -57,9 +58,9 @@ for ii = idx[2:end];
 
 	ktt = kernelfunc(x[:,ii], x[:,ii]) + lambda2;
 
-	at = Kinv * kt;
+	at = Kinv * kt';
 
-	dt = ktt - kt'*at;
+	dt = ktt - kt*at;
 
 	if abs(dt[1]) > nu && m < maxdict
 
@@ -72,7 +73,7 @@ for ii = idx[2:end];
 
 		P = [P zeros(eltype(x),size(P,1), 1); zeros(eltype(x),1, size(P,1)) 1];
 
-		alpha = [alpha - ((at ./ dt) * (y[ii] - kt'*alpha)); (1./dt)*(y[ii] - kt'*alpha)];
+		alpha = [alpha - ((at ./ dt) * (y[ii] - kt*alpha)); (1./dt)*(y[ii] - kt*alpha)];
 
 		if mod(m,50)==0
 			println("Dictionary Size: $m of $maxdict")
@@ -111,7 +112,7 @@ for ii = idx[2:end];
 
 		P = P - ((Pat*(at'*P)) ./ atPat);
 
-		alpha = alpha + Kinv*qt*(y(ii) - kt'*alpha);
+		alpha = alpha + Kinv*qt*(y[ii] - kt*alpha);
 
 		if mod(m2,50)==0
 			println("On sample: $m2 of $(sz[2])")
