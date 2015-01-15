@@ -22,7 +22,7 @@ function krls(x, y; nu=1., lambda=0.1, kernelfunc=linear_kernel, maxdict=100, pr
 
 x = precision(x);
 y = precision(y);
-
+lambda = precision(lambda);
 
 lambda2 = lambda.^2;
 
@@ -80,29 +80,38 @@ for ii = idx[2:end];
 		
 	else
 
+		# Pat = P*at;
+		# atPat = 1 + at'*Pat;
+
+		# qt = Pat ./ atPat[1];
+
+		# # P -= ((Pat*(at'*P)) ./ atPat);
+
+		# PatatP = Pat*(at'*P);
+		# PatatP ./= atPat[1];
+
+		# P -= PatatP;
+
+		# # alpha += Kinv*qt*(y[ii] - kt'*alpha);
+
+		# kta = kt'*alpha;
+
+		# dif = y[ii] - kta[1];
+
+		# Kinvqt = Kinv*qt;
+
+		# Kinvqt .*= dif;
+
+		# alpha += Kinvqt;
+
 		Pat = P*at;
 		atPat = 1 + at'*Pat;
 
-		qt = Pat ./ atPat[1];
+		qt = Pat ./ atPat;
 
-		# P -= ((Pat*(at'*P)) ./ atPat);
+		P = P - ((Pat*(at'*P)) ./ atPat);
 
-		PatatP = Pat*(at'*P);
-		PatatP ./= atPat[1];
-
-		P -= PatatP;
-
-		# alpha += Kinv*qt*(y[ii] - kt'*alpha);
-
-		kta = kt'*alpha;
-
-		dif = y[ii] - kta[1];
-
-		Kinvqt = Kinv*qt;
-
-		Kinvqt .*= dif;
-
-		alpha += Kinvqt;
+		alpha = alpha + Kinv*qt*(y(ii) - kt'*alpha);
 
 		if mod(m2,50)==0
 			println("On sample: $m2 of $(sz[2])")
