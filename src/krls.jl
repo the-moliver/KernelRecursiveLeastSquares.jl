@@ -19,7 +19,9 @@ function krls{T}(x::Array{T}, y::Array{T}; nu=1., lambda=0.1, kernelfunc=linear_
 #		   Kinv : Inverse of kernel matrix
 #	   dict_idx : dictionary sample indicies
 #
-
+#
+# Citation:
+# Y. Engel, S. Mannor, and R. Meir, “The kernel recursive least-squares algorithm,” IEEE Transactions on Signal Processing, vol. 52, no. 8, pp. 2275–2285, 2004.
 
 
 lambda = convert(T, lambda)
@@ -46,9 +48,9 @@ Kinv = (1./K)'
 alpha = (y[idx[1]]./K)'
 dict[:,1] = x[:,idx[1]]
 dict_idx[1] = idx[1]
-P = 1
-m = 1
-m2 = 1
+P = one(eltype(x))
+m = one(eltype(x))
+m2 = one(eltype(x))
 
 for ii = idx[2:end]
 
