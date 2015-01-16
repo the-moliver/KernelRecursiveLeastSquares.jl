@@ -92,16 +92,8 @@ for ii = idx[2:end]
 
 		# P -= ((Pat*(at'*P)) ./ atPat)
 		# optimized as
-		try
-			Base.LinAlg.BLAS.gemm!('N', 'N', -one(eltype(y)), qt,atP, one(eltype(y)), P)
-		catch
-			println(dt)
-			println(ii)
-			println(P)
-			println(nu)
-			println(m)
-			println(m2)
-		end
+		Base.LinAlg.BLAS.gemm!('N', 'N', -one(eltype(y)), qt,atP, one(eltype(y)), P)
+
 		# alpha +=  Kinv*qt*(y[ii] - kt*alpha)
 		# optimized as
 		kta = kt*alpha
